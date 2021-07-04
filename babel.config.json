@@ -1,0 +1,4 @@
+{
+    "presets": ["@babel/react","@babel/typescript",["@babel/env", { "modules": false, "targets": "> 5%, not dead" }]],
+    "plugins": ["react-hot-loader/babel"]
+}

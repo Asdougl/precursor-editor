@@ -1,31 +1,14 @@
-import React, { FC } from 'react'
+import React, { FC, useMemo } from 'react'
 import { ThemeColor } from '../types/colors'
+
+type ButtonType = 'primary' | 'secondary' | 'teritary' | 'link' | 'warning'
 
 interface Props {
     onClick?: () => void
     disabled?: boolean
     type?: 'button' | 'submit'
     className?: string
-    color?: ThemeColor | 'white' | 'link'
-}
-
-const colorClassNames = (color: ThemeColor | 'white' | 'link') => {
-    switch (color) {
-        case 'blue-dianne':
-            return 'bg-blue-dianne focus:ring-blue-dianne text-white'
-        case 'burnt-sienna':
-            return 'bg-burnt-sienna focus:ring-burnt-sienna text-white'
-        case 'jungle-green':
-            return 'bg-jungle-green focus:ring-jungle-green text-white'
-        case 'rob-roy':
-            return 'bg-rob-roy focus:ring-rob-roy text-white'
-        case 'sandy-brown':
-            return 'bg-sandy-brown focus:ring-sandy-brown text-white'
-        case 'link':
-            return 'bg-white focus:ring-jungle-green text-jungle-green'
-        default:
-            return 'bg-white focus:ring-gray-200 text-black border border-gray-300'
-    }
+    style?: ButtonType
 }
 
 export const Button: FC<Props> = ({
@@ -34,13 +17,28 @@ export const Button: FC<Props> = ({
     disabled,
     type = 'button',
     className = '',
-    color = 'jungle-green',
+    style,
 }) => {
+    const styleClasses = useMemo(() => {
+        switch (style) {
+            case 'primary':
+                return 'bg-jungle-green hover:opacity-60 focus:ring-jungle-green text-white border border-jungle-green'
+            case 'secondary':
+                return 'bg-blue-dianne hover:opacity-60 focus:ring-blue-dianne text-white border border-blue-dianne'
+            case 'teritary':
+                return 'bg-none hover:opacity-60 focus:ring-gray-200 text-black border border-black'
+            case 'link':
+                return 'bg-white hover:bg-gray-100 focus:ring-jungle-green text-jungle-green'
+            case 'warning':
+                return 'bg-burnt-sienna hover:opacity-60 focus:ring-burnt-sienna text-white'
+            default:
+                return 'bg-black hover:bg-opacity-70 focus:ring-gray-700 text-white border border-black'
+        }
+    }, [style])
+
     return (
         <button
-            className={`rounded px-4 py-2 focus:outline-none focus:ring focus:ring-opacity-30 disabled:opacity-40 ${colorClassNames(
-                color
-            )} ${className}`}
+            className={`rounded px-4 py-2 focus:outline-none focus:ring focus:ring-opacity-30 disabled:opacity-40 ${styleClasses} ${className}`}
             onClick={onClick}
             disabled={disabled}
             type={type}

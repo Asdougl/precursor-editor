@@ -16,11 +16,16 @@ module.exports = {
       white: colors.white,
       black: colors.black,
       transparent: 'transparent'
+    },
+    fontFamily: {
+      'sans': ['Inter'],
+      'serif': ['Playfair'],
+      'mono': ['FiraCode']
     }
   },
   variants: {
     extend: {
-      opacity: ['disabled']
+      opacity: ['disabled'],
     },
   },
   plugins: [],

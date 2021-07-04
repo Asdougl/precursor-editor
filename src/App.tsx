@@ -11,6 +11,7 @@ import { UserContext } from './context/UserContext'
 
 import Login from './views/Login'
 import LoadingPage from './views/LoadingPage'
+import MDEditor from './views/MDEditor'
 
 const App = () => {
     const [authUser, loading] = useAuthState(auth)
@@ -55,6 +56,12 @@ const App = () => {
                                 ) : (
                                     <Login signUp />
                                 )}
+                            </Route>
+
+                            {/* Testing Routes */}
+
+                            <Route path="/md-editor">
+                                <MDEditor />
                             </Route>
 
                             {/* Catchall Route */}

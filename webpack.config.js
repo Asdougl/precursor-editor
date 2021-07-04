@@ -19,15 +19,17 @@ module.exports = {
                 ]
             },
             {
-                test: /\.tsx?$/,
+                test: /\.s[ac]ss$/,
                 use: [
-                    {
-                        loader: 'ts-loader',
-                        options: {
-                            transpileOnly: true,
-                        }
-                    }
+                    'style-loader',
+                    'css-loader',
+                    'sass-loader'
                 ]
+            },
+            {
+                test: /\.(t|j)sx?$/,
+                use: 'babel-loader',
+                exclude: /node_modules/
             },
             {
                 test: /\.(png|jpe?g|gif|ico)$/i,
@@ -69,6 +71,7 @@ module.exports = {
         contentBase: path.resolve(__dirname, 'dist'),
         stats: 'minimal',
         overlay: true,
-        port: 8080
+        port: 8080,
+        open: true,
     }
 }

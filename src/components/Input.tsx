@@ -28,7 +28,7 @@ export const Input: FC<Props> = ({
     return (
         <div className={`flex flex-col px-2 py-4 gap-2 ${className}`}>
             {children && <label htmlFor={id.current}>{children}</label>}
-            <div className="border rounded border-gray-300 w-full focus-within:ring focus-within:ring-burnt-sienna focus-within:ring-opacity-30 flex">
+            <div className="border rounded border-black w-full focus-within:ring focus-within:ring-burnt-sienna focus-within:ring-opacity-30 flex">
                 <input
                     type={displayType}
                     value={value}

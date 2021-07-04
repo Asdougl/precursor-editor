@@ -1,4 +1,4 @@
-import React, { FC } from 'react'
+import React, { FC, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import { FaIcon } from '../components/FaIcon'
 
@@ -10,6 +10,8 @@ interface Props {
     onClose?: () => void
     width?: WrapperSize
     onSubmit?: () => void
+    className?: string
+    escHotkey?: boolean
 }
 
 const getWrapperSize = (size: WrapperSize) => {
@@ -33,13 +35,29 @@ const ModalWrapper: FC<Props> = ({
     height,
     onClose,
     width = 'md',
+    className = '',
+    escHotkey,
 }) => {
+    useEffect(() => {
+        const onKeyup = (e: KeyboardEvent) => {
+            if (e.key === 'Escape' && escHotkey) {
+                onClose?.()
+            }
+        }
+
+        document.body.addEventListener('keyup', onKeyup)
+
+        return () => {
+            document.body.removeEventListener('keyup', onKeyup)
+        }
+    }, [escHotkey, onClose])
+
     return createPortal(
         <div className="absolute top-0 left-0 w-full h-full bg-black bg-opacity-25 flex justify-center z-20 p-8">
             <div
                 className={`bg-white w-full ${getWrapperSize(
                     width
-                )} rounded-lg shadow-lg px-2 flex flex-col ${
+                )} rounded-lg border border-black shadow-lg px-2 flex flex-col ${
                     height === 'fit' ? 'my-auto' : ''
                 }`}
             >
@@ -54,7 +72,9 @@ const ModalWrapper: FC<Props> = ({
                         </button>
                     </h3>
                 )}
-                <div className="flex-grow py-2 overflow-auto">{children}</div>
+                <div className={`flex-grow py-2 overflow-auto ${className}`}>
+                    {children}
+                </div>
             </div>
         </div>,
         document.getElementById('modal-root') || document.createElement('div')

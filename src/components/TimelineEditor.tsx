@@ -4,13 +4,20 @@ import { Button } from '../components/Button'
 import ModalWrapper from '../layout/ModalWrapper'
 import { Input } from '../components/Input'
 import { FaIcon } from './FaIcon'
-import { EventEditor } from './EventEditor'
+import { EventEditorRouted } from './EventEditor'
+import { firestore } from '../firebase'
+import { Tag } from './Tag'
+import { Link, Route, useHistory, useLocation } from 'react-router-dom'
+import classNames from 'classnames'
 
 interface Props {
     start: number
     end: number
     allEvents: TimelineEvent[]
-    createEvent: (year: number, name: string) => void
+    createEvent: (year: number, name: string) => Promise<string>
+    updateEvent: (event: TimelineEvent) => void
+    deleteEvent: (eventid: string) => void
+    routeName: string
 }
 
 export const TimelineEditor = ({
@@ -18,6 +25,9 @@ export const TimelineEditor = ({
     end,
     allEvents,
     createEvent,
+    updateEvent,
+    deleteEvent,
+    routeName,
 }: Props) => {
     const [resolution, setResolution] = useState(2)
     const [topYear, setTopYear] = useState(start)
@@ -27,14 +37,11 @@ export const TimelineEditor = ({
     const [addHeight, setAddHeight] = useState<number | null>(null)
     const [showAll, setShowAll] = useState(false)
 
-    const [newEventName, setNewEventName] = useState('')
-    const [newEventYear, setNewEventYear] = useState(0)
-    const [creatingNewEvent, setCreatingNewEvent] = useState(false)
-
     const [sideColumn, setSideColumn] = useState(false)
-    const [editEvent, setEditEvent] = useState<TimelineEvent | null>(null)
 
     const timelineRef = useRef<HTMLDivElement | null>(null)
+
+    const history = useHistory()
 
     useEffect(() => {
         scroll()
@@ -74,26 +81,21 @@ export const TimelineEditor = ({
     }
 
     const addEvent = () => {
-        setNewEventYear(Math.round((addHeight || 0) / resolution))
-        setCreatingNewEvent(true)
+        const newEventYear = Math.round((addHeight || 0) / resolution)
+        createEvent(newEventYear, `New Event`).then((docid) => {
+            history.push(`${routeName}/${docid}?new=true`)
+        })
     }
 
-    const closeNewEvent = () => {
-        setCreatingNewEvent(false)
-        setNewEventYear(0)
-        setNewEventName('')
-    }
-
-    const saveNewEvent = (e: React.FormEvent) => {
-        e.preventDefault()
-        createEvent(newEventYear, newEventName)
-        closeNewEvent()
+    const delEvent = (id: string) => {
+        history.push(routeName)
+        deleteEvent(id)
     }
 
     return (
-        <div className="border border-gray-200 w-full flex-grow rounded p-4 overflow-hidden grid grid-cols-6 divide-x">
+        <div className="border border-black bg-white w-full flex-grow rounded p-4 overflow-hidden grid grid-cols-6 divide-x divide-black">
             {/* Timeline */}
-            <div className="flex flex-col divide-y pr-4 overflow-hidden">
+            <div className="flex flex-col divide-y divide-black pr-4 overflow-hidden">
                 <div className="px-4 py-2">Year {topYear}</div>
                 <div
                     className="flex-grow px-4 overflow-auto"
@@ -103,7 +105,7 @@ export const TimelineEditor = ({
                     onMouseLeave={() => setAddHeight(null)}
                 >
                     <div
-                        className="bg-gray-300 w-1 relative"
+                        className="bg-black w-1 relative"
                         style={{ height: `${(end - start) * resolution}px` }}
                     >
                         {/* <div className="absolute w-4 h-4 rounded-full bg-burnt-sienna" style={{ top: `${1342 * resolution}px`, left: '33px' }}></div> */}
@@ -126,7 +128,7 @@ export const TimelineEditor = ({
                                 }`}
                                 style={{ top: `${evt.year * resolution}px` }}
                             >
-                                <div className="w-4 h-4 rounded-full bg-gray-400"></div>
+                                <div className="w-4 h-4 rounded-full bg-black"></div>
                                 <div>{evt.year}</div>
                             </div>
                         ))}
@@ -137,9 +139,10 @@ export const TimelineEditor = ({
 
             {/* Events */}
             <div
-                className={`${
+                className={classNames(
+                    'pl-4',
                     sideColumn ? 'col-span-3 pr-4' : 'col-span-5'
-                } pl-4`}
+                )}
             >
                 <div className="px-4 py-2 flex justify-between">
                     <div className="font-semibold text-xl">
@@ -151,25 +154,28 @@ export const TimelineEditor = ({
                 </div>
                 <ul className="flex flex-col gap-1">
                     {currentEvents.map((evt) => (
-                        <li
+                        <Link
                             key={evt._id}
                             onMouseOver={() => setFocusedEvent(evt)}
                             onMouseLeave={() => setFocusedEvent(null)}
-                            onClick={() => setEditEvent(evt)}
-                            className="border border-gray-200 px-2 py-1 rounded hover:bg-gray-100 flex gap-2"
+                            to={`${routeName}/${evt._id}`}
+                            className="border border-black px-4 py-3 rounded hover:bg-gray-100 flex gap-2"
                         >
-                            <div className="w-10 text-right">{evt.year}</div>
+                            <div className="w-10 text-center">{evt.year}</div>
                             <div>{evt.name}</div>
                             {evt.tags && (
                                 <div className="flex items-center">
-                                    {evt.tags.map((tag) => (
-                                        <div className="bg-gray-100 px-1 rounded font-mono text-sm text-gray-500">
-                                            #{tag}
+                                    {evt.tags.map((tag, index) => (
+                                        <div
+                                            key={`${tag}-${index}`}
+                                            className="px-2 border border-gray-200 rounded font-mono text-black text-opacity-60"
+                                        >
+                                            {tag}
                                         </div>
                                     ))}
                                 </div>
                             )}
-                        </li>
+                        </Link>
                     ))}
                 </ul>
             </div>
@@ -180,43 +186,23 @@ export const TimelineEditor = ({
                         <div className="font-semibold text-xl">
                             Article Title
                         </div>
-                        <Button
-                            color="white"
-                            onClick={() => setSideColumn(false)}
-                        >
+                        <Button onClick={() => setSideColumn(false)}>
                             <FaIcon icon="times" />
                         </Button>
                     </h3>
                 </div>
             )}
 
-            {creatingNewEvent && (
-                <ModalWrapper
-                    height="fit"
-                    title={`Event in ${newEventYear}`}
-                    onClose={closeNewEvent}
-                >
-                    <form onSubmit={saveNewEvent} className="flex">
-                        <Input
-                            value={newEventName}
-                            onChange={setNewEventName}
-                            className="flex-grow py-0"
-                        />
-                        <div className="py-4">
-                            <Button type="submit">
-                                <FaIcon icon="check" />
-                            </Button>
-                        </div>
-                    </form>
-                </ModalWrapper>
-            )}
-
-            {editEvent && (
-                <EventEditor
-                    event={editEvent}
-                    onClose={() => setEditEvent(null)}
+            <Route path={`${routeName}/:eventId`}>
+                <EventEditorRouted
+                    events={allEvents}
+                    onClose={() => history.push(routeName)}
+                    onSave={(event) => updateEvent(event)}
+                    onDelete={delEvent}
+                    maxYear={end}
+                    minYear={start}
                 />
-            )}
+            </Route>
         </div>
     )
 }

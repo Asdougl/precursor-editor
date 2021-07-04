@@ -1,3 +1,30 @@
+@font-face {
+    font-family: 'Inter';
+    src: url('./assets/fonts/Inter-VariableFont.ttf') format('truetype');
+    font-weight: 0 999;
+}
+
+@font-face {
+    font-family: 'FiraCode';
+    src: url('./assets/fonts/FiraCode-VF.ttf') format('truetype');
+    font-weight: 0 999;
+}
+
+@font-face {
+    font-family: 'Playfair';
+    src: url('./assets/fonts/PlayfairDisplay-VariableFont.ttf')
+        format('truetype');
+    font-weight: 0 999;
+}
+
+@font-face {
+    font-family: 'Playfair';
+    src: url('./assets/fonts/PlayfairDisplay-Italic-VariableFont.ttf')
+        format('truetype');
+    font-weight: 0 999;
+    font-style: italic;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

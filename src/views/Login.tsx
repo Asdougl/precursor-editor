@@ -42,16 +42,16 @@ const Login = ({ signUp }: Props) => {
     return (
         <div className="grid xl:grid-cols-2 h-full">
             <div className="bg-gray-600 items-center justify-center hidden xl:flex">
-                <div className="font-bold text-white text-4xl flex gap-2">
+                <div className="font-bold text-white text-4xl flex gap-2 font-serif">
                     <Stripes className="rounded-full" />
                     Precursor
                 </div>
             </div>
             <div className="p-8 h-full">
-                <div className="flex rounded shadow overflow-hidden h-full mx-auto">
+                <div className="flex overflow-hidden h-full mx-auto">
                     <Stripes />
                     <div className="px-8 py-6 w-full flex flex-col items-center">
-                        <h2 className="text-6xl font-bold flex items-center h-20">
+                        <h2 className="text-6xl font-bold flex items-center h-20 font-serif">
                             {!signUp ? 'Login' : 'Sign Up'}
                         </h2>
 
@@ -96,7 +96,6 @@ const Login = ({ signUp }: Props) => {
                                 <div className="px-2 py-4">
                                     <Button
                                         className="w-full"
-                                        color="white"
                                         disabled={pending}
                                     >
                                         Login with Google
@@ -106,7 +105,6 @@ const Login = ({ signUp }: Props) => {
                                 <div className="px-2 py-4">
                                     <Button
                                         className="w-full"
-                                        color="white"
                                         disabled={pending}
                                     >
                                         Login with Facebook

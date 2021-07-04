@@ -1,5 +1,47 @@
 import { library } from '@fortawesome/fontawesome-svg-core'
 
-import { faArrowLeft, faCheck, faSpinnerThird, faTimes } from '@fortawesome/pro-light-svg-icons'
+import {
+    faArrowLeft,
+    faBold,
+    faCheck,
+    faChevronDown,
+    faChevronUp,
+    faCode,
+    faEye,
+    faHeading,
+    faImage,
+    faItalic,
+    faLink,
+    faListOl,
+    faListUl,
+    faPlus,
+    faQuoteLeft,
+    faSpinnerThird,
+    faTasks,
+    faTimes,
+    faTrash,
+} from '@fortawesome/pro-light-svg-icons'
 
-library.add(faTimes, faCheck, faSpinnerThird, faArrowLeft)
+library.add(
+    faTimes,
+    faCheck,
+    faSpinnerThird,
+    faArrowLeft,
+    faBold,
+    faItalic,
+    faHeading,
+    faQuoteLeft,
+    faListUl,
+    faListOl,
+    faLink,
+    faImage,
+    faEye,
+    faPlus,
+    faCode,
+    faTasks,
+    faCheck,
+    faTimes,
+    faChevronUp,
+    faChevronDown,
+    faTrash
+)
